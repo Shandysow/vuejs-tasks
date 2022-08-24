@@ -115,12 +115,10 @@
     align="center"
     justify="space-around"
   >
-    <v-btn depressed color ="primary" v-on:click="onsubmit()">
-      SUBMIT
-    </v-btn>
- <v-btn depressed color ="normal" v-on:click="resetInput()">
-      CANCEL
-    </v-btn>
+    <v-btn v-if="!isEdit" depressed color ="primary" v-on:click="onsubmit()">SUBMIT</v-btn>
+     <v-btn v-else depressed color ="primary" v-on:click="updateInForm(index)">UPDATE</v-btn>
+
+
     </v-row>
 </form>
 <br>
@@ -148,7 +146,7 @@
           </th>
 
           <th class="text-left">
-          UPDATE ACTION
+             UPDATE ACTION
              </th>
              
  <th class="text-left">
@@ -160,14 +158,15 @@
       <tbody>
         <tr v-for="(item, index) in all" :key="index">
          <th scope="row">{{ index+1 }}</th>
-          <td>{{ item.name }}</td>
-          <td>{{ item.email }}</td>
+        
+       <td>{{ item.name }}</td> 
+       <td>{{ item.email }}</td>
            <td>{{ item.gender }}</td>
           <td>{{ item.interest }}</td>
            <td>{{ item.location }}</td>
-           <td> <v-btn depressed color ="teal" @click="Update()">
-               UPDATE
+           <td> <v-btn depressed color ="teal" @click="update(index)">UPDATE
             </v-btn></td>
+  
             <td> <v-btn depressed color ="error" @click="deleteTableRow(index)">
                DELETE
             </v-btn></td>
@@ -220,6 +219,7 @@
           'COIMBATURE',
           'HIMACHAL PRADESH',
         ],
+        isEdit: false
   }
     },
  watch:{
@@ -262,18 +262,31 @@ onsubmit()
 {
    this.all.push({ name: this.name, email: this.email, gender: this.gender, interest: this.interest, location: this.location });
    console.log(this.all);
+
 },
 deleteTableRow(index) { 
   console.log(index)
       this.all.splice(index, 1);      
    },
-
- resetInput() {
-      this.name = "";
-      this.email = "";
-      this.pass = "";
-      this.password = "";  
+update(index){
+      this.isEdit = true;
+      this.name = this.all[index].name;
+      this.email = this.all[index].email;
+      this.gender = this.all[index].gender;
+      this.interest = this.all[index].interest;
+      this.location = this.all[index].location;
+      this.index=index;
     },
+updateInForm(index){
+      
+      this.all[index].name = this.name;
+      this.all[index].email = this.email;
+      this.all[index].gender = this.gender;
+      this.all[index].interest = this.interest;
+      this.all[index].location = this.location;
+      this.isEdit=false;
+    },
+
 
   }
   }
