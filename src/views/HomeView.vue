@@ -1,18 +1,206 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+<div class="">
+<form>
+<h1>CAR FORM</h1>
+<br>
+<label><b>CAR NAME </b></label>
+      <v-row>
+        <v-col
+          cols="6"
+          sm="3"
+        >
+        <v-text-field
+        v-model="car_name"
+        outlined
+      ></v-text-field>
+        </v-col>
+       </v-row>
+        <v-row>
+          <v-col
+          cols="6"
+          sm="3"
+        >
+        <label><b>COLOUR </b></label>
+          <v-text-field
+            v-model="colour"
+             outlined
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+         <v-row>
+          <v-col
+          cols="6"
+          sm="3"
+        >
+        <label><b>PRICE </b></label>
+          <v-text-field
+            v-model="price"
+             outlined
+             type="number"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+         <v-row>
+          <v-col
+          cols="6"
+          sm="3"
+        >
+        <label><b>YEAR </b></label>
+          <v-text-field
+            v-model="year"
+             outlined
+             type="number"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+  <v-btn v-if="!isEdit" depressed color ="primary" v-on:click="onsubmit()">SUBMIT</v-btn>
+     <v-btn v-else depressed color ="primary" v-on:click=" updateDataInForm()">UPDATE</v-btn>
+</form>
+
+
+<h1><center>CAR TABLE</center></h1>
+    <v-simple-table dark>
+    <template v-slot:default>
+      <thead>
+        <tr>
+          <th class="text-left">
+            CARNAME
+          </th>
+          <th class="text-left">
+            COLOUR
+          </th>
+           <th class="text-left">
+           ID
+          </th>
+            <th class="text-left">
+            PRICE
+          </th>
+          <th class="text-left">
+           YEAR
+          </th>
+            <th class="text-left">
+           UPDATE ACTION
+          </th>
+          <th class="text-left">
+           DELETE ACTION
+          </th>
+       </tr>
+      </thead>
+       <tbody>
+     <tr v-for="(item,index) in list" v-bind:key="item.id">
+      <td>{{ item.car_name }}</td>
+       <td>{{ item.colour }}</td>
+        <td>{{ item.id }}</td>
+           <td>{{ item.price }}</td>
+          <td>{{ item.year }}</td>
+        <td> <v-btn depressed color ="teal" @click="updateData(index)">UPDATE
+            </v-btn></td>
+           <td><v-btn depressed color ="error" v-on:click="deleteData(item.id)">DELETE</v-btn></td>
+          
+       </tr>
+         </tbody>
+    </template>
+  </v-simple-table>
+  <hello-world />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+  import HelloWorld from '../components/HelloWorld'
+  import Vue from 'vue'
+  import axios from 'axios'
+  import VueAxios from 'vue-axios'
+  Vue.use(VueAxios,axios)
+  export default {
 
-export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
+ data(){
+      return {
+        car_name:'',
+        colour:'',
+        price:'',
+        year:'',
+        list:[],
+        rowindex:0,
+        isEdit: false,
+      }
+      
+
+ },
+ methods: {
+getData(){
+this.axios.get('http://127.0.0.1:3333/cars')
+       .then((res) => {
+        this.list=res.data
+        console.log(this.list);
+       })
+     },
+     onsubmit(){
+
+        this.axios.post('http://127.0.0.1:3333/cars', {
+          car_name: this.car_name,
+          colour: this.colour,
+          price: this.price,
+          year: this.year,
+        })
+        .then((response) => {
+          const data = response.data;
+          this.list.push(data);
+          this.car_name = "";
+          this.colour = "";
+          this.price= "";
+          this.year="";
+        });
+     },
+
+  updateData(id){
+
+  this.isEdit = true;
+  this.car_name= this.list[id].car_name;
+  this.colour=this.list[id].colour;
+  this.price=this.list[id].price;
+  this.year=this.list[id].year;
+  
+  this.rowindex=id;
+  },
+
+  updateDataInForm()
+  {
+      this.axios.patch('http://127.0.0.1:3333/cars',{
+        
+        id: this.list[this.rowindex].id,
+        car_name:this.car_name,
+        colour:this.colour,
+        price:this.price,
+        year:this.year
+        })
+      this.list[this.rowindex].car_name=this.car_name;
+      this.list[this.rowindex].colour = this.colour;
+      this.list[this.rowindex].price = this.price;
+      this.list[this.rowindex].year = this.year;
+
+      this.isEdit=false;
+  },
+
+ deleteData(id){
+ this.axios.delete('http://127.0.0.1:3333/cars/'+id)
+      .then(()=>{
+         this.getData();
+      })
+    },
+  },
+
+   mounted(){
+      this.getData(); 
+    },
+
+  
+    name: 'HomeView',
+
+    components: {
+      HelloWorld,
+    },
   }
-}
 </script>
