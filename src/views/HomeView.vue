@@ -1,65 +1,57 @@
 <template>
-<div class="">
-<form>
-<h1>CAR FORM</h1>
-<br>
-<label><b>CAR NAME </b></label>
-      <v-row>
-        <v-col
-          cols="6"
-          sm="3"
-        >
-        <v-text-field
-        v-model="car_name"
-        outlined
-      ></v-text-field>
-        </v-col>
-       </v-row>
-        <v-row>
-          <v-col
-          cols="6"
-          sm="3"
-        >
-        <label><b>COLOUR </b></label>
-          <v-text-field
-            v-model="colour"
-             outlined
-          ></v-text-field>
-        </v-col>
-      </v-row>
-
-         <v-row>
-          <v-col
-          cols="6"
-          sm="3"
-        >
-        <label><b>PRICE </b></label>
-          <v-text-field
-            v-model="price"
-             outlined
-             type="number"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-
-         <v-row>
-          <v-col
-          cols="6"
-          sm="3"
-        >
-        <label><b>YEAR </b></label>
-          <v-text-field
-            v-model="year"
-             outlined
-             type="number"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-
-  <v-btn v-if="!isEdit" depressed color ="primary" v-on:click="onsubmit()">SUBMIT</v-btn>
+<div>
+   <v-card-actions>
+<h1 style="color:blue"><i>welcome {{data}}</i></h1> 
+  <v-spacer></v-spacer>
+<v-btn color="primary" v-on:click="logout()">LOGOUT</v-btn>
+</v-card-actions>
+<v-app id="inspire">
+      <v-content>
+         <v-container fluid fill-height>
+            <v-layout align-center justify-center>
+               <v-flex xs12 sm8 md4>
+                  <v-card class="elevation-12">
+                     <v-toolbar dark color="black">
+                        <v-toolbar-title>CAR DETAILS</v-toolbar-title>
+                     </v-toolbar>
+                     <v-card-text>
+                      <v-form>
+                           <v-text-field
+                              name="carname"
+                              label="Car Name"
+                              :rules="rules.req"
+                           ></v-text-field>
+                           <v-text-field
+                              name="colour"
+                              label="Colour"
+                              :rules="rules.req"
+                           ></v-text-field>
+                                <v-row>
+                          <v-col cols="12">
+                          <v-combobox
+                        v-model="select"
+                        :items="items"
+                        label="Price"
+                        multiple
+                        outlined
+                         dense
+                     ></v-combobox>
+                     </v-col>
+                     </v-row>
+                     <v-date-picker type ="year">
+                    </v-date-picker>
+                    
+                    <v-spacer></v-spacer>
+     <v-btn v-if="!isEdit" depressed color ="primary" v-on:click="onsubmit()">SUBMIT</v-btn>
      <v-btn v-else depressed color ="primary" v-on:click=" updateDataInForm()">UPDATE</v-btn>
-</form>
-
+            </v-form>
+                     </v-card-text>
+                  </v-card>
+               </v-flex>
+            </v-layout>
+         </v-container>
+      </v-content>
+   </v-app>
 
 <h1><center>CAR TABLE</center></h1>
     <v-simple-table dark>
@@ -118,6 +110,10 @@
 
  data(){
       return {
+      data:'',
+       rules: {
+          req: [val => (val || '').length > 0 || 'Mandatory Field', val => (!val) || /^[a-zA-Z\s]*$/.test(val) || 'Please type only alphabets'],
+      },
         car_name:'',
         colour:'',
         price:'',
@@ -125,17 +121,25 @@
         list:[],
         rowindex:0,
         isEdit: false,
+        select: [],
+        items: [
+          '50000','100000','250000','350000','500000','1000000','20000000'
+        ],
       }
       
 
  },
  methods: {
 getData(){
+  this.data = localStorage.getItem('loggedin')
+  this.data = JSON.parse(this.data)
+  console.log(this.data)
 this.axios.get('http://127.0.0.1:3333/cars')
        .then((res) => {
         this.list=res.data
         console.log(this.list);
        })
+       
      },
      onsubmit(){
 
@@ -189,6 +193,10 @@ this.axios.get('http://127.0.0.1:3333/cars')
       .then(()=>{
          this.getData();
       })
+    },
+    logout(){
+      alert('logged out')
+      this.$router.push('/')
     },
   },
 
