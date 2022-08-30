@@ -5,6 +5,13 @@
   <v-spacer></v-spacer>
 <v-btn color="primary" v-on:click="logout()">LOGOUT</v-btn>
 </v-card-actions>
+<v-row>
+          <v-col
+          cols="6"
+          sm="3"
+        >
+</v-col>
+</v-row>
 <form>
 <h1>CAR FORM</h1>
 <br>
@@ -43,7 +50,7 @@
         <label><b>PRICE </b></label>
           <v-text-field
             v-model="price"
-             v-on:keypress="NumbersOnly"
+             @keypress="NumbersOnly"
              outlined
           ></v-text-field>
         </v-col>
@@ -57,15 +64,16 @@
         <label><b>YEAR </b></label>
           <v-text-field
                v-model="year"
-               v-on:keypress="NumbersOnly"
+               @keypress="NumbersOnly"
                outlined
           ></v-text-field>
         </v-col>
       </v-row>
 
-  <v-btn v-if="!isEdit" depressed color ="primary" v-on:click="onsubmit()">SUBMIT</v-btn>
-     <v-btn v-else depressed color ="primary" v-on:click=" updateDataInForm()">UPDATE</v-btn>
+  <v-btn v-if="!isEdit" depressed color ="primary" @click="onsubmit()">SUBMIT</v-btn>
+     <v-btn v-else depressed color ="primary" @click=" updateDataInForm()">UPDATE</v-btn>
 </form>
+
 
 <h1><center>CAR TABLE</center></h1>
     <v-simple-table dark>
@@ -96,15 +104,15 @@
        </tr>
       </thead>
        <tbody>
-     <tr v-for="(item,index) in list" v-bind:key="item.id">
-      <td>{{ item.car_name }}</td>
+     <tr v-for="(item,index) in list" :key="item.id">
+      <td v-b-tooltip.hover :title="item.car_name">{{ item.car_name | truncate(12)}}</td>
        <td>{{ item.colour }}</td>
         <td>{{ item.id }}</td>
            <td>{{ item.price }}</td>
           <td>{{ item.year }}</td>
         <td> <v-btn depressed color ="teal" @click="updateData(index)">UPDATE
             </v-btn></td>
-           <td><v-btn depressed color ="error" v-on:click="deleteData(item.id)">DELETE</v-btn></td>
+           <td><v-btn depressed color ="error" @click="deleteData(item.id)">DELETE</v-btn></td>
           
        </tr>
          </tbody>
@@ -135,10 +143,16 @@
         list:[],
         rowindex:0,
         isEdit: false,
-      }
-      
+      }},
 
- },
+      filters: {
+            truncate: function(value) {
+                if (value.length > 12) {
+                    value = value.substring(0, 11) + '...';
+                }
+                return value
+            }
+        },
  methods: {
    NumbersOnly: (event) => {
       let keyCode = event.keyCode;
@@ -146,10 +160,12 @@
         event.preventDefault();
       }
     },
+
 getData(){
   this.data = localStorage.getItem('loggedin')
   this.data = JSON.parse(this.data)
   console.log(this.data)
+  
 this.axios.get('http://127.0.0.1:3333/cars')
        .then((res) => {
         this.list=res.data
@@ -157,6 +173,7 @@ this.axios.get('http://127.0.0.1:3333/cars')
        })
        
      },
+
      onsubmit(){
 
         this.axios.post('http://127.0.0.1:3333/cars', {
@@ -173,6 +190,7 @@ this.axios.get('http://127.0.0.1:3333/cars')
           this.price= "";
           this.year="";
         });
+        this.getData()
      },
 
   updateData(id){
@@ -205,14 +223,19 @@ this.axios.get('http://127.0.0.1:3333/cars')
   },
 
  deleteData(id){
+  let x = window.confirm("Do you want to delete the row selected?")
+  if (x) {
  this.axios.delete('http://127.0.0.1:3333/cars/'+id)
       .then(()=>{
          this.getData();
       })
+    alert("deleted successfully!");
+    }
     },
     logout(){
       alert('logged out')
       this.$router.push('/')
+      localStorage.clear()
     },
   },
 
@@ -221,6 +244,8 @@ this.axios.get('http://127.0.0.1:3333/cars')
     },
 
   
+
+
     name: 'HomeView',
 
     components: {

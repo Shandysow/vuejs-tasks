@@ -31,10 +31,10 @@
                         </v-form>
                      </v-card-text>
                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="primary" v-on:click="login()">login </v-btn>
-                     </v-card-actions>
-                  </v-card>
+              <v-spacer></v-spacer>
+           <v-btn color="primary" v-on:click="login()">login </v-btn>
+     </v-card-actions>
+   </v-card>
                </v-flex>
             </v-layout>
          </v-container>
@@ -58,14 +58,15 @@ data(){
 },
 methods:{
       login() {
-        if (this.email == 'Test123#@gmail.com' && this.username == 'sowmya' && this.password == 'abc123') {
+        if (this.email == 'Sow890@gmail.com' && this.username == 'sowmya' && this.password == 'abc123') {
           this.$router.push('/home');
           alert('login successful !!')
         } else {
           this.$router.push('/');
           alert('login failed !!')
         }
-        localStorage.setItem("loggedin",JSON.stringify(this.username))
+
+localStorage.setItem("loggedin",JSON.stringify(this.username))
 
 },
 }
